@@ -479,19 +479,19 @@ let Chaincode = class {
     //
     // args is passed as a JSON string
     let json = JSON.parse(args);
-    let key = 'owner' + json['owner'];
+    let key = 'uid' + json['uid'];
     json['docType'] = 'creators';
 
     console.log('##### register payload: ' + JSON.stringify(json));
 
     // Check if the donor already exists
-    let ownerQuery = await stub.getState(key);
-    if (ownerQuery.toString()) {
-      throw new Error('##### register - This owner already exists: ' + json['donorUserName']);
+    let keyQuery = await stub.getState(key);
+    if (keyQuery.toString()) {
+      throw new Error('##### register - This uid already exists: ' + json['uid']);
     }
 
     await stub.putState(key, Buffer.from(JSON.stringify(json)));
-    console.log('============= END : createDonor ===========');
+    console.log('============= END : register ===========');
   
   }
 
@@ -512,7 +512,24 @@ let Chaincode = class {
   async provisioning(stub, args) {
     console.log('============= START : provisioning ===========');
     console.log('##### provisioning arguments: ' + JSON.stringify(args));
+ //
+    // args is passed as a JSON string
+    let json = JSON.parse(args);
+    let key = 'uid' + json['uid'];
+    let uid = 'uid'
+    json['docType'] = 'distributor';
 
+    console.log('##### provisioning payload: ' + JSON.stringify(json));
+
+    // Check if the donor already exists
+    let keyQuery = await stub.getState(key);
+    if (keyQuery.toString()) {
+      throw new Error('##### provisioning - This uid already exists: ' + json['uid']);
+    }
+
+    await stub.putState(key, Buffer.from(JSON.stringify(json)));
+    console.log('============= END : provisioning ===========');
+  
    
   }
 
@@ -525,7 +542,7 @@ let Chaincode = class {
    "uid": "000000001",
    "owner": "dj pumpkins", 
    "seller": "seller_a",
-   "status": "requestsell",
+   "status": "requestouse",
    "number": "000000001"
 }
    * 
@@ -534,6 +551,24 @@ let Chaincode = class {
   async use(stub, args) {
     console.log('============= START : use ===========');
     console.log('##### use arguments: ' + JSON.stringify(args));
+
+    //
+    // args is passed as a JSON string
+    let json = JSON.parse(args);
+    let key = 'uid' + json['uid'];
+    json['docType'] = 'seller';
+
+    console.log('##### provisioning payload: ' + JSON.stringify(json));
+
+    // Check if the donor already exists
+    let keyQuery = await stub.getState(key);
+    if (keyQuery.toString()) {
+      throw new Error('##### use - This uid already exists: ' + json['uid']);
+    }
+
+    await stub.putState(key, Buffer.from(JSON.stringify(json)));
+    console.log('============= END : use ===========');
+  
   }
  /**
    * allow
@@ -551,6 +586,24 @@ let Chaincode = class {
   async allow(stub, args) {
     console.log('============= START : allow ===========');
     console.log('##### allow arguments: ' + JSON.stringify(args));
+
+     //
+    // args is passed as a JSON string
+    let json = JSON.parse(args);
+    let key = 'uid' + json['uid'];
+    json['docType'] = 'distributor';
+
+    console.log('##### allow payload: ' + JSON.stringify(json));
+
+    // Check if the donor already exists
+    let keyQuery = await stub.getState(key);
+    if (keyQuery.toString()) {
+      throw new Error('##### allow - This uid already exists: ' + json['uid']);
+    }
+
+    await stub.putState(key, Buffer.from(JSON.stringify(json)));
+    console.log('============= END : allow ===========');
+
   }
 
 /**
@@ -564,14 +617,51 @@ async queryContent(stub, args) {
 
   // args is passed as a JSON string
   let json = JSON.parse(args);
-  let key = 'owner' + json['owner'];
+  let key = 'uid' + json['uid'];
   console.log('##### queryContent key: ' + key);
 
   return queryByKey(stub, key);
 }
 
+/**
+ * queryContentByCreators()
+ * @param {*} stub 
+ * @param {*} args 
+ */
+async queryContentByCreators(stub, args) {
+  
+  console.log('============= START : queryContentByOrg ===========');
+  console.log('##### queryContentByCreators arguments: ' + JSON.stringify(args));
 
+  let queryString = '{"selector": {"docType": "creators"}}';
+  return queryByString(stub, queryString);
+}
+/**
+ * queryContentByDistributor()
+ * @param {*} stub 
+ * @param {*} args 
+ */
+async queryContentByDistributor(stub, args) {
+  
+  console.log('============= START : queryContentByOrg ===========');
+  console.log('##### queryContentByDistributor arguments: ' + JSON.stringify(args));
 
+  let queryString = '{"selector": {"docType": "distributor"}}';
+  return queryByString(stub, queryString);
+}
+/**
+ * queryContentBySeller()
+ * @param {*} stub 
+ * @param {*} args 
+ */
+async queryContentBySeller(stub, args) {
+  
+  console.log('============= START : queryContentByOrg ===========');
+  console.log('##### queryContentBySeller arguments: ' + JSON.stringify(args));
+
+  let queryString = '{"selector": {"docType": "seller"}}';
+  return queryByString(stub, queryString);
+}
 
   /************************************************************************************************
    * 
